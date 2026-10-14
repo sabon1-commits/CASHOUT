@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cashout - 3 Games</title>
+
+<!-- MONETAG - REPLACE YOUR ID -->
+<script>(function(s){s.dataset.zone='YOUR_ZONE_ID',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+<style>
+body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center}
+#top{padding:12px;background:#222;display:flex;justify-content:space-between;font-weight:bold}
+#tabs{display:flex;gap:5px;padding:10px;background:#1a1a1a}
+.tab{flex:1;padding:12px;background:#333;border-radius:10px;font-weight:bold;cursor:pointer}
+.tab.active{background:#00ff88;color:#000}
+#game{position:relative;width:100%;height:68vh;overflow:hidden;background:linear-gradient(#000,#222);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.fruit{position:absolute;font-size:55px;cursor:pointer}
+button.main{background:#00ff88;color:#000;padding:16px 35px;border:none;border-radius:12px;font-size:18px;font-weight:bold;margin-top:10px}
+.reward-pop{position:absolute;color:#00ff88;font-weight:bold;font-size:22px;animation:pop 0.6s forwards}
+@keyframes pop{100%{transform:translateY(-50px);opacity:0}}
+#spinWheel{width:200px;height:200px;border-radius:50%;border:8px solid #00ff88;background:conic-gradient(#ff0066 0 60deg,#00ff88 60deg 120deg,#ffcc00 120deg 180deg,#00ccff 180deg 240deg,#ff6600 240deg 300deg,#9900ff 300deg 360deg);transition:transform 2s}
+.boxes{display:flex;gap:15px;margin-top:20px}
+.box{width:85px;height:85px;background:linear-gradient(#ffcc00,#ff9900);border-radius:15px;font-size:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:3px solid #fff}
+.box:active{transform:scale(0.9)}
+</style>
+</head>
+<body>
+<div id="top"><div>Bal: $<span id="bal">0.000</span></div><div>3 Games</div></div>
+<div id="tabs">
+<div class="tab active" onclick="showGame(1)">🍎 SLASH</div>
+<div class="tab" onclick="showGame(2)">🎡 SPIN</div>
+<div class="tab" onclick="showGame(3)">🎁 BOXES</div>
+</div>
+<div id="game"></div>
+<button class="main" onclick="cashout()">CASHOUT</button>
+
+<script>
+let bal=0; const _0x1=0x1/0x3E8; let currentGame=1; let gameInterval;
+
+function showGame(n){
+ currentGame=n; document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i+1==n));
+ clearInterval(gameInterval); document.getElementById('game').innerHTML='';
+ if(n==1) startSlash(); if(n==2) startSpin(); if(n==3) startBoxes();
+}
+
+function addReward(x,y){
+ bal+=_0x1; document.getElementById('bal').innerText=bal.toFixed(3);
+ let r=document.createElement('div'); r.className='reward-pop'; r.innerText='REWARD!'; r.style.left=x; r.style.top=y;
+ document.getElementById('game').appendChild(r); setTimeout(()=>r.remove(),600);
+}
+
+// GAME 1 - SLASH
+function startSlash(){
+ const fruits=["🍎","🍉","🍊","🍓","🍌","🥝","🍍"];
+ function spawn(){
+  let f=document.createElement('div'); f.className='fruit'; f.innerText=fruits[Math.floor(Math.random()*fruits.length)];
+  f.style.left=Math.random()*85+'%'; f.style.top='100%'; document.getElementById('game').appendChild(f);
+  let y=100, speed=2+Math.random()*3;
+  let move=setInterval(()=>{y-=speed; f.style.top=y+'%'; if(y<-15){clearInterval(move); f.remove();}},30);
+  f.onclick=()=>{ addReward(f.style.left,f.style.top); f.remove(); clearInterval(move); }
+ }
+ gameInterval=setInterval(spawn,700);
+}
+
+// GAME 2 - SPIN
+function startSpin(){
+ document.getElementById('game').innerHTML='<div id="spinWheel"></div><button class="main" onclick="doSpin()" style="margin-top:20px">SPIN & WIN!</button><p style="color:#aaa">Spin every 2 sec - 3x faster than before!</p>';
+}
+let spinning=false;
+function doSpin(){
+ if(spinning) return; spinning=true;
+ let w=document.getElementById('spinWheel'); let rot=720+Math.random()*720; w.style.transform='rotate('+rot+'deg)';
+ setTimeout(()=>{ addReward('50%','40%'); spinning=false; },2000);
+}
+
+// GAME 3 - LUCKY BOXES (NEW - Better than Tap!)
+function startBoxes(){
+ document.getElementById('game').innerHTML='<h2 style="margin:0">🎁 Pick a Box!</h2><p style="color:#aaa">One box has BIG reward!</p><div class="boxes"><div class="box" onclick="openBox(this)">🎁</div><div class="box" onclick="openBox(this)">🎁</div><div class="box" onclick="openBox(this)">🎁</div></div><p style="margin-top:20px;color:#00ff88">New boxes every 2 sec!</p>';
+ gameInterval=setInterval(()=>{ if(currentGame==3) startBoxes(); },2500);
+}
+function openBox(el){
+ if(el.innerText!='🎁') return;
+ let prizes=['💰','🪙','💎','💵','😢']; let pick=prizes[Math.floor(Math.random()*prizes.length)];
+ el.innerText=pick; addReward('50%','50%');
+ setTimeout(()=>{ el.innerText='🎁'; },800);
+}
+
+function cashout(){
+ if(bal>=1){ let opay=prompt('Enter Opay number:'); if(opay){alert('Cashout request sent!'); bal=0; document.getElementById('bal').innerText='0.000';} } else {alert('Minimum $1 to cashout');}
+}
+
+startSlash();
+</script>
+</body>
+</html>
